@@ -1,0 +1,12 @@
+FROM golang:1.20.5-alpine
+
+RUN go install github.com/githubnemo/CompileDaemon@latest
+
+ENV APP_HOME /app
+# Set the module cache directory
+ENV GOMODCACHE /go/pkg/mod
+
+WORKDIR "$APP_HOME"
+
+
+ENTRYPOINT CompileDaemon -build="go build ./cmd/main.go" -command="./main"
