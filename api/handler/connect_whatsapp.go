@@ -3,11 +3,13 @@ package handler
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/matinkhosravani/funtory-challenge/app"
 	"github.com/matinkhosravani/funtory-challenge/domain"
 	"github.com/matinkhosravani/funtory-challenge/util"
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 const QRCodeEventName = "qrcode"
@@ -62,21 +64,46 @@ func (h *ConnectWhatsappHandler) Handle(c *gin.Context) {
 		c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	for evt := range qrChan {
-		if evt.Event == "code" {
-			event, err := util.FormatServerSentEvent(QRCodeEventName, evt.Code)
-			if err != nil {
-				c.String(http.StatusInternalServerError, err.Error())
+	timeout := time.NewTimer(time.Duration(app.GetEnv().QRCodeTimeOut) * time.Second)
+	numQRcodesSent := 0
+	for {
+		select {
+		case evt, ok := <-qrChan:
+			if !ok {
+				// Channel closed, the client has disconnected or no more QR codes to send.
+				c.String(http.StatusOK, "Connection closed")
 				return
 			}
-			_, err = fmt.Fprint(w, event)
-			if err != nil {
-				c.String(http.StatusInternalServerError, err.Error())
-				return
+
+			if evt.Event == "code" {
+				event, err := util.FormatServerSentEvent(QRCodeEventName, evt.Code)
+				if err != nil {
+					c.String(http.StatusInternalServerError, err.Error())
+					return
+				}
+				_, err = fmt.Fprint(w, event)
+				if err != nil {
+					c.String(http.StatusInternalServerError, err.Error())
+					return
+				}
+				flusher.Flush()
+
+				numQRcodesSent++
+				if numQRcodesSent >= app.GetEnv().QrCodeSendLimit {
+					// Close the connection after sending 5 QR codes.
+					c.String(http.StatusOK, "Connection closed after sending 5 QR codes")
+					return
+				}
+			} else {
+				log.Printf("Login event: %s , user_id : %d \n", evt.Event, userID)
 			}
-			flusher.Flush()
-		} else {
-			log.Printf("Login event: %s , user_id : %d \n", evt.Event, userID)
+
+		case <-timeout.C:
+			//we can close the connection here
+
+			// Close the connection after n seconds.
+			c.String(http.StatusOK, "Connection closed after 60 seconds")
+			return
 		}
 	}
 }
