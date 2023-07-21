@@ -5,6 +5,7 @@ type WhatsappClient interface {
 	Connect() error
 	GetQRcodeChannel() <-chan QRCodeevent
 	AddEventHandler(evtHandler EventHandler)
+	SetUserID(userID uint)
 }
 type EventHandler func(evt interface{})
 
