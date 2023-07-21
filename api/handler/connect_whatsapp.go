@@ -47,9 +47,7 @@ func (h *ConnectWhatsappHandler) Handle(c *gin.Context) {
 		return
 	}
 	util.SetupSSEHeaders(w)
-
 	qrChan := h.Client.GetQRcodeChannel()
-	err = h.Client.Connect()
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 	}
