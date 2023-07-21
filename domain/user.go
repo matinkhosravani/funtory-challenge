@@ -1,8 +1,8 @@
 package domain
 
 type User struct {
-	id  uint   `json:"id"`
-	jid string `json:"jid"`
+	ID  uint   `json:"id"`
+	JID string `json:"jid"`
 }
 
 type UserRepository interface {
