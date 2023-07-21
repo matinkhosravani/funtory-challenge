@@ -1,0 +1,48 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.min.js"></script>
+
+    <title>QRcode</title>
+</head>
+
+<body>
+<h1>Whatsapp Qrcode</h1>
+
+<div id="qr" style="width: 400px; height: 400px">
+
+</div>
+
+<script>
+    const es = new EventSource("http://localhost:3000/api/v1/connect/1");
+    es.onerror = (err) => {
+        console.log("onerror", err)
+    };
+    es.onmessage = (msg) => {
+        console.log("onmessage", msg)
+    };
+    es.onopen = (...args) => {
+        console.log("onopen", args)
+    };
+    es.addEventListener("qrcode", (event) => {
+        const parsedData = JSON.parse(event.data);
+        const codeData = parsedData.data;
+        console.log(codeData)
+        const qr = new qrcode(0, 'L'); // 'L' stands for low error correction level
+        // Set the data for the QR code
+        qr.addData(codeData);
+        qr.make();
+
+        // Get the generated QR code as an SVG string
+        const qrCodeSVG = qr.createSvgTag({ scalable: true });
+
+        // Display the QR code SVG in the 'qrcode' div
+        document.getElementById('qr').innerHTML = qrCodeSVG;
+    });
+</script>
+</body>
+
+</html>
