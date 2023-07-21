@@ -41,6 +41,12 @@ jobs:
         with:
           go-version: '1.20.2'
 
+      - name: Install swag
+        run: go install github.com/swaggo/swag/cmd/swag@latest
+
+      - name: Generate Swagger docs
+        run: swag init -g cmd/main.go
+
       - name: Format code
         run: go fmt $(go list ./... | grep -v /vendor/)
 
@@ -70,6 +76,12 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: '1.20.2'
+      - name: Install swag
+        run: go install github.com/swaggo/swag/cmd/swag@latest
+
+      - name: Generate Swagger docs
+        run: swag init -g cmd/main.go
+
       - name: Build
         run: |
           mkdir -p ${{ env.OUTPUT_NAME }}

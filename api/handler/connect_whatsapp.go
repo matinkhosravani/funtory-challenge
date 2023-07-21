@@ -17,6 +17,16 @@ type ConnectWhatsappHandler struct {
 	Client   domain.WhatsappClient
 }
 
+// Handle is the handler function for connecting user's whatsapp account
+// @Summary connect whatsapp account to database
+// @Description is the handler function for connecting user's whatsapp account.
+// if user has already connected his account then there is no need to generate Qrcode
+// but if there is no jid assigned him in database then server  opens a connection
+// and push qrcode to the client once the previous qrcode expires
+// @ID connect
+// @Param id path int true "id of user"
+// @Success 200 {string} example
+// @Router /connect/{id} [get]
 func (h *ConnectWhatsappHandler) Handle(c *gin.Context) {
 	w := c.Writer
 	userIDstr := c.Param("user_id")
