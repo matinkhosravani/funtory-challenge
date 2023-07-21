@@ -10,11 +10,28 @@ on:
 
 env:
   OUTPUT_NAME: "__bin__/${{ github.repository }}"
+  POSTGRES_ROOT_PASSWORD: 123456
+  POSTGRES_DATABASE: digiexp_test
+  DB_TYPE: mysql
+  DB_HOST: 127.0.0.1
+  DB_PORT: 5432
+  DB_USER: root
+  DB_PASS: 123456
+  DB_NAME: funtory_test
+
 
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    services:
+      postgres:
+        image: postgres:alpine
+        env:
+          POSTGRES_USER: ${{ env.DB_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_ROOT_PASSWORD }}
+          POSTGRES_DB: ${{ env.POSTGRES_DATABASE }}
+        ports:
+          - 5432:5432
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -29,6 +46,14 @@ jobs:
 
       - name: Vet code
         run: go vet $(go list ./... | grep -v /vendor/)
+
+      - name: Change testing.env
+        run: |
+          cp env.example testing.env
+          sed -i "s/DB_HOST=.*/DB_HOST=127.0.0.1/" ./testing.env
+          sed -i "s/DB_NAME=.*/DB_NAME=${POSTGRES_DATABASE}/" ./testing.env
+          sed -i "s/DB_PASS=.*/DB_PASS=${POSTGRES_ROOT_PASSWORD}/" ./testing.env
+          sed -i "s/DB_USER=.*/DB_USER=${DB_USER}/" ./testing.env
 
       - name: Run tests
         run: |

@@ -10,6 +10,10 @@ func Boot() {
 	app.Env = NewEnv(false)
 }
 
+func BootTestApp() {
+	app.Env = NewEnv(true)
+}
+
 func GetEnv() *Env {
 	return app.Env
 }
