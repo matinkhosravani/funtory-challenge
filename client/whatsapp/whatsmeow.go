@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/matinkhosravani/funtory-challenge/app"
 	"github.com/matinkhosravani/funtory-challenge/domain"
+	"github.com/matinkhosravani/funtory-challenge/event"
 	wm "go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/store"
 	"go.mau.fi/whatsmeow/store/sqlstore"
@@ -16,13 +17,12 @@ import (
 )
 
 type Whatsmeow struct {
-	client   *wm.Client
-	UserRepo domain.UserRepository
-	UserID   uint
+	client *wm.Client
+	UserID uint
 }
 
-func NewWhatsmeow(userRepo domain.UserRepository) domain.WhatsappClient {
-	return &Whatsmeow{UserRepo: userRepo}
+func NewWhatsmeow() domain.WhatsappClient {
+	return &Whatsmeow{}
 }
 
 func (w *Whatsmeow) Connect() error {
@@ -96,15 +96,17 @@ func (w *Whatsmeow) SetUserID(userID uint) {
 }
 
 func (w *Whatsmeow) eventHandler(evt interface{}) {
+	waEventHandler := event.NewWhatsappEventHandler()
+
 	switch v := evt.(type) {
 	case *events.Connected:
-		fmt.Println("connected")
+		waEventHandler.OnConnect()
 	case *events.LoggedOut:
-		w.UserRepo.SetJIDByUserID(w.UserID, nil)
+		waEventHandler.OnLogOut(w.UserID)
 	case *events.PairSuccess:
 		jid := v.ID.String()
-		w.UserRepo.SetJIDByUserID(w.UserID, &jid)
+		waEventHandler.OnPairSuccess(w.UserID, &jid)
 	case *events.QRScannedWithoutMultidevice:
-		fmt.Println("Multidevice is not enabled")
+		waEventHandler.OnQRScannedWithoutMultidevice()
 	}
 }

@@ -12,10 +12,9 @@ func UserRoutes(r *gin.RouterGroup) {
 }
 
 func setUpConnectWhatsappCheckRoute(r *gin.RouterGroup) {
-	userRepo := repository.NewUserRepository()
 	h := handler.ConnectWhatsappHandler{
-		UserRepo: userRepo,
-		Client:   whatsapp.NewWhatsmeow(userRepo),
+		UserRepo: repository.NewUserRepository(),
+		Client:   whatsapp.NewWhatsmeow(),
 	}
 
 	r.GET("/connect/:user_id", h.Handle)
