@@ -1,6 +1,9 @@
 package postgres
 
-import "gorm.io/gorm"
+import (
+	"github.com/matinkhosravani/funtory-challenge/domain"
+	"gorm.io/gorm"
+)
 
 type user struct {
 	ID  uint    `gorm:"primaryKey"`
@@ -24,4 +27,22 @@ func (r UserRepository) GetJIDByUserID(ID uint) (*string, error) {
 	}
 
 	return u.JID, nil
+}
+
+func (r *UserRepository) Store(domainUser *domain.User) error {
+	var p user
+	p.JID = domainUser.JID
+
+	err := r.DB.Create(&p).Error
+	if err != nil {
+		return err
+	}
+	domainUser.ID = p.ID
+	domainUser.JID = p.JID
+
+	return nil
+}
+
+func (r *UserRepository) Empty() error {
+	return r.DB.Exec("Truncate Table users").Error
 }

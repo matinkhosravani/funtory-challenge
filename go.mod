@@ -3,6 +3,7 @@ module github.com/matinkhosravani/funtory-challenge
 go 1.20
 
 require (
+	github.com/bxcodec/faker/v4 v4.0.0-beta.3
 	github.com/gin-gonic/gin v1.9.1
 	github.com/lib/pq v1.10.9
 	github.com/spf13/viper v1.16.0
