@@ -11,10 +11,10 @@ To use this project, follow these steps:
 2. Navigate to the cloned project folder.
 3. Run the following command in the terminal:
    ```bash
-   cp env.example
+   cp env.example .env
    docker-compose -f docker-compose-dev.yml up -d --build 
    ```
-   server will start listening on **localhost:3000**.
+   server will start listening on **localhost:8888**.
 
 Note: be sure to change proxy_enable variable in the env file
 
