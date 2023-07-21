@@ -17,7 +17,7 @@ import (
 )
 
 func TestUnit_Handle(t *testing.T) {
-
+	app.BootTestApp()
 	t.Run("user already connected", func(t *testing.T) {
 		userID := 123
 		jid := "dummy_jid"
@@ -80,7 +80,7 @@ func TestUnit_Handle(t *testing.T) {
 			}
 		}
 		data, _ := util.FormatServerSentEvent(QRCodeEventName, dummyQrCodeevent.Code)
-		assert.Equal(t, data, resp.Body.String())
+		assert.Contains(t, resp.Body.String(), data)
 	})
 }
 

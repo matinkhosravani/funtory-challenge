@@ -8,15 +8,17 @@ import (
 )
 
 type Env struct {
-	ServerAddress string `mapstructure:"SERVER_ADDRESS"`
-	DBType        string `mapstructure:"DB_TYPE"`
-	DBHost        string `mapstructure:"DB_HOST"`
-	DBPort        string `mapstructure:"DB_PORT"`
-	DBUser        string `mapstructure:"DB_USER"`
-	DBPass        string `mapstructure:"DB_PASS"`
-	DBName        string `mapstructure:"DB_NAME"`
-	ProxyEnabled  bool   `mapstructure:"PROXY_ENABLED"`
-	ProxyURL      string `mapstructure:"PROXY_URL"`
+	ServerAddress   string `mapstructure:"SERVER_ADDRESS"`
+	DBType          string `mapstructure:"DB_TYPE"`
+	DBHost          string `mapstructure:"DB_HOST"`
+	DBPort          string `mapstructure:"DB_PORT"`
+	DBUser          string `mapstructure:"DB_USER"`
+	DBPass          string `mapstructure:"DB_PASS"`
+	DBName          string `mapstructure:"DB_NAME"`
+	QrCodeSendLimit int    `mapstructure:"QRCODE_SSE_SEND_LIMIT"`
+	QRCodeTimeOut   int    `mapstructure:"QRCODE_SSE_TIME_OUT"`
+	ProxyEnabled    bool   `mapstructure:"PROXY_ENABLED"`
+	ProxyURL        string `mapstructure:"PROXY_URL"`
 }
 
 func NewEnv(isTestEnv bool) *Env {
