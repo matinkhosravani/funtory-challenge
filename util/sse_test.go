@@ -16,8 +16,8 @@ func TestFormatServerSentEvent(t *testing.T) {
 		data  interface{}
 		want  string
 	}{
-		{"event1", "Test data 1", "data{event: event1\ndata: \"Test data 1\"\n\n}"},
-		{"event2", 12345, "data{event: event2\ndata: 12345\n\n}"},
+		{"event1", "Test data 1", "event: event1\ndata: {\"data\":\"Test data 1\"}\n\n\n"},
+		{"event2", 12345, "event: event2\ndata: {\"data\":12345}\n\n\n"},
 		{"event3", TestData{"hello", 42}, "event: event3\ndata: {\"data\":{\"field1\":\"hello\",\"field2\":42}}\n\n\n"},
 	}
 
