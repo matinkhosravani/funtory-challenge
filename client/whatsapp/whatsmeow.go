@@ -21,8 +21,8 @@ type Whatsmeow struct {
 	UserID   uint
 }
 
-func NewWhatsmeow(userRepo domain.UserRepository, userID uint) domain.WhatsappClient {
-	return &Whatsmeow{UserRepo: userRepo, UserID: userID}
+func NewWhatsmeow(userRepo domain.UserRepository) domain.WhatsappClient {
+	return &Whatsmeow{UserRepo: userRepo}
 }
 
 func (w *Whatsmeow) Connect() error {
@@ -81,6 +81,10 @@ func (w *Whatsmeow) GetQRcodeChannel() <-chan domain.QRCodeevent {
 	}()
 
 	return out
+}
+
+func (w *Whatsmeow) SetUserID(userID uint) {
+	w.UserID = userID
 }
 
 func (w *Whatsmeow) eventHandler(evt interface{}) {

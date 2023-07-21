@@ -3,7 +3,6 @@ package handler
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/matinkhosravani/funtory-challenge/client/whatsapp"
 	"github.com/matinkhosravani/funtory-challenge/domain"
 	"github.com/matinkhosravani/funtory-challenge/util"
 	"log"
@@ -15,6 +14,7 @@ const QRCodeEventName = "qrcode"
 
 type ConnectWhatsappHandler struct {
 	UserRepo domain.UserRepository
+	Client   domain.WhatsappClient
 }
 
 func (h *ConnectWhatsappHandler) Handle(c *gin.Context) {
@@ -31,13 +31,12 @@ func (h *ConnectWhatsappHandler) Handle(c *gin.Context) {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
-
-	client := whatsapp.NewWhatsmeow(h.UserRepo, uint(userID))
-	client.NewClient(jid)
+	h.Client.SetUserID(uint(userID))
+	h.Client.NewClient(jid)
 
 	//no need to get qrcode
 	if jid != nil {
-		client.Connect()
+		h.Client.Connect()
 		c.String(http.StatusOK, "already connected")
 		return
 	}
@@ -49,8 +48,8 @@ func (h *ConnectWhatsappHandler) Handle(c *gin.Context) {
 	}
 	util.SetupSSEHeaders(w)
 
-	qrChan := client.GetQRcodeChannel()
-	err = client.Connect()
+	qrChan := h.Client.GetQRcodeChannel()
+	err = h.Client.Connect()
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 	}
