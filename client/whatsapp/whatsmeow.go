@@ -42,7 +42,15 @@ func (w *Whatsmeow) AddEventHandler(evtHandler domain.EventHandler) {
 func (w *Whatsmeow) NewClient(jidText *string) error {
 	dbLog := waLog.Stdout("Database", "DEBUG", true)
 	// Make sure you add appropriate DB connector imports, e.g. github.com/mattn/go-sqlite3 for SQLite
-	container, err := sqlstore.New("postgres", "postgresql://root:123456@127.0.0.1:5432/funtory?sslmode=disable", dbLog)
+	dsn := fmt.Sprintf(
+		"postgresql://%s:%s@%s:%s/%s?sslmode=disable",
+		app.GetEnv().DBUser,
+		app.GetEnv().DBPass,
+		app.GetEnv().DBHost,
+		app.GetEnv().DBPort,
+		app.GetEnv().DBName,
+	)
+	container, err := sqlstore.New("postgres", dsn, dbLog)
 	if err != nil {
 		return err
 	}
